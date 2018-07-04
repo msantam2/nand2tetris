@@ -42,5 +42,48 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // x preset
+    // zx
+    Not16(in=x[0..15], out=zxi);
+    Inc16(in=zxi, out=complementx);
+    Add16(a=complementx, b=x[0..15], out=zxo);
+    Mux16(a=x[0..15], b=zxo, sel=zx, out=zxf);
+
+    // nx
+    Not16(in=zxf, out=notx);
+    Mux16(a=zxf, b=notx, sel=nx, out=xpreset);
+
+
+    // y preset
+    // zy
+    Not16(in=y[0..15], out=zyi);
+    Inc16(in=zyi, out=complementy);
+    Add16(a=complementy, b=y[0..15], out=zyo);
+    Mux16(a=y[0..15], b=zyo, sel=zy, out=zyf);
+
+    // ny
+    Not16(in=zyf, out=noty);
+    Mux16(a=zyf, b=noty, sel=ny, out=ypreset);
+
+
+    // f
+    // 0 => x & y
+    // 1 => x + y
+    And16(a=xpreset, b=ypreset, out=andout);
+    Add16(a=xpreset, b=ypreset, out=addout);
+    Mux16(a=andout, b=addout, sel=f, out=fout);
+
+    // no
+    Not16(in=fout, out=nout);
+    Mux16(a=fout, b=nout, sel=no, out[0..7]=outxxx, out[8..15]=outyyy, out=out, out[15]=ouchie);
+
+
+    // zr 1 if out == 0000000000000000, else 0.
+    Or8Way(in=outxxx, out=orouta);
+    Or8Way(in=outyyy, out=oroutb);
+    Or(a=orouta, b=oroutb, out=oroutc);
+    Not(in=oroutc, out=zr);
+
+    // ng
+    And(a=true, b=ouchie, out=ng);
 }
