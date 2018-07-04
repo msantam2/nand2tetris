@@ -43,47 +43,44 @@ CHIP ALU {
 
     PARTS:
     // x preset
-    // zx
-    Not16(in=x[0..15], out=zxi);
+    Not16(in=x, out=zxi);
     Inc16(in=zxi, out=complementx);
-    Add16(a=complementx, b=x[0..15], out=zxo);
-    Mux16(a=x[0..15], b=zxo, sel=zx, out=zxf);
+    Add16(a=complementx, b=x, out=zxo);
 
-    // nx
-    Not16(in=zxf, out=notx);
-    Mux16(a=zxf, b=notx, sel=nx, out=xpreset);
+    Not16(in=x, out=notx);
+    Not16(in=zxo, out=znotx);
+
+    Mux4Way16(a=x, b=notx, c=zxo, d=znotx, sel[1]=zx, sel[0]=nx, out=xpreset);
 
 
     // y preset
-    // zy
-    Not16(in=y[0..15], out=zyi);
+    Not16(in=y, out=zyi);
     Inc16(in=zyi, out=complementy);
-    Add16(a=complementy, b=y[0..15], out=zyo);
-    Mux16(a=y[0..15], b=zyo, sel=zy, out=zyf);
+    Add16(a=complementy, b=y, out=zyo);
 
-    // ny
-    Not16(in=zyf, out=noty);
-    Mux16(a=zyf, b=noty, sel=ny, out=ypreset);
+    Not16(in=y, out=noty);
+    Not16(in=zyo, out=znoty);
+
+    Mux4Way16(a=y, b=noty, c=zyo, d=znoty, sel[1]=zy, sel[0]=ny, out=ypreset);
 
 
     // f
-    // 0 => x & y
-    // 1 => x + y
     And16(a=xpreset, b=ypreset, out=andout);
     Add16(a=xpreset, b=ypreset, out=addout);
-    Mux16(a=andout, b=addout, sel=f, out=fout);
 
     // no
-    Not16(in=fout, out=nout);
-    Mux16(a=fout, b=nout, sel=no, out[0..7]=outxxx, out[8..15]=outyyy, out=out, out[15]=ouchie);
+    Not16(in=andout, out=nandout);
+    Not16(in=addout, out=naddout);
+
+    Mux4Way16(a=andout, b=nandout, c=addout, d=naddout, sel[1]=f, sel[0]=no, out[0..7]=zrflag1, out[8..15]=zrflag2, out[15]=ngflag, out=out);
 
 
-    // zr 1 if out == 0000000000000000, else 0.
-    Or8Way(in=outxxx, out=orouta);
-    Or8Way(in=outyyy, out=oroutb);
-    Or(a=orouta, b=oroutb, out=oroutc);
-    Not(in=oroutc, out=zr);
+    // zr
+    Or8Way(in=zrflag1, out=zrouta);
+    Or8Way(in=zrflag2, out=zroutb);
+    Or(a=zrouta, b=zroutb, out=zroutc);
+    Not(in=zroutc, out=zr);
 
     // ng
-    And(a=true, b=ouchie, out=ng);
+    And(a=ngflag, b=true, out=ng);
 }
