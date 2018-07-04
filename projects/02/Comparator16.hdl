@@ -1,0 +1,18 @@
+CHIP Comparator16 {
+  IN
+    in[16];
+
+  OUT
+    zr,
+    ng;
+
+  PARTS:
+    // zr
+    Or8Way(in=in[0..7], out=zrouta);
+    Or8Way(in=in[8..15], out=zroutb);
+    Or(a=zrouta, b=zroutb, out=zroutc);
+    Not(in=zroutc, out=zr);
+
+    // ng
+    And(a=in[15], b=true, out=ng);
+}

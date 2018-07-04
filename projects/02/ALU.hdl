@@ -68,15 +68,7 @@ CHIP ALU {
     Not16(in=andout, out=nandout);
     Not16(in=addout, out=naddout);
 
-    Mux4Way16(a=andout, b=nandout, c=addout, d=naddout, sel[1]=f, sel[0]=no, out[0..7]=zrflag1, out[8..15]=zrflag2, out[15]=ngflag, out=out);
+    Mux4Way16(a=andout, b=nandout, c=addout, d=naddout, sel[1]=f, sel[0]=no, out=out, out=outc);
 
-
-    // zr
-    Or8Way(in=zrflag1, out=zrouta);
-    Or8Way(in=zrflag2, out=zroutb);
-    Or(a=zrouta, b=zroutb, out=zroutc);
-    Not(in=zroutc, out=zr);
-
-    // ng
-    And(a=ngflag, b=true, out=ng);
+    Comparator16(in=outc, zr=zr, ng=ng);
 }
