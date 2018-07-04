@@ -1,0 +1,12 @@
+CHIP Zero16 {
+  IN
+    in[16];
+
+  OUT
+    out[16];
+
+  PARTS:
+    Not16(in=in, out=zi);
+    Inc16(in=zi, out=complement);
+    Add16(a=complement, b=in, out=out);
+}

@@ -43,9 +43,7 @@ CHIP ALU {
 
     PARTS:
     // x preset
-    Not16(in=x, out=zxi);
-    Inc16(in=zxi, out=complementx);
-    Add16(a=complementx, b=x, out=zxo);
+    Zero16(in=x, out=zxo);
 
     Not16(in=x, out=notx);
     Not16(in=zxo, out=znotx);
@@ -54,9 +52,7 @@ CHIP ALU {
 
 
     // y preset
-    Not16(in=y, out=zyi);
-    Inc16(in=zyi, out=complementy);
-    Add16(a=complementy, b=y, out=zyo);
+    Zero16(in=y, out=zyo);
 
     Not16(in=y, out=noty);
     Not16(in=zyo, out=znoty);
